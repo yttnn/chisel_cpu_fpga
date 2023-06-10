@@ -1,0 +1,7 @@
+{
+  "name": "chisel_cpu_fpga",
+  //"runArgs": ["-it -v ./:/src chisel_cpu_fpga"],
+  "build": {
+    "dockerfile": "Dockerfile"
+  }
+}
