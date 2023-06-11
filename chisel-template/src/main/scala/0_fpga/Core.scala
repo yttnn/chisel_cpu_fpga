@@ -36,8 +36,8 @@ class Core extends Module {
   // ===================
   // Execute
   val alu_out = MuxCase(0.U(WORD_LEN.W), Seq(
-    (inst == LW) -> (rs1_data + imm_i_sext),
-    (inst == SW) -> (rs1_data + imm_s_sext)
+    (inst === LW) -> (rs1_data + imm_i_sext),
+    (inst === SW) -> (rs1_data + imm_s_sext)
   ))
 
   // ===================
