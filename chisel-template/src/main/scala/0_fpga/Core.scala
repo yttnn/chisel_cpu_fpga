@@ -3,10 +3,12 @@ package fpga0
 import chisel3._
 import chisel3.util._
 import common.Consts._
+import common.Instructions._
 
 class Core extends Module {
   val io = IO(new Bundle {
     val imem = Flipped(new ImemPortIo())
+    val dmem = Flipped(new DmemPortIo())
     val exit = Output(Bool())
   })
 
@@ -26,6 +28,26 @@ class Core extends Module {
   val wb_addr = inst(11, 7)
   val rs1_data = Mux((rs1_addr =/= 0.U(WORD_LEN.U)), regfile(rs1_addr), 0.U(WORD_LEN.W))
   val rs2_data = Mux((rs2_addr =/= 0.U(WORD_LEN.U)), regfile(rs2_addr), 0.U(WORD_LEN.W))
+  val imm_i = inst(31, 20)
+  val imm_i_sext = Cat(Fill(20, imm_i(11)), imm_i)
+
+  // ===================
+  // Execute
+  val alu_out = MuxCase(0.U(WORD_LEN.W), Seq(
+    (inst == LW) -> (rs1_data + imm_i_sext)
+  ))
+
+  // ===================
+  // Memory Access
+  io.dmem.addr := alu_out
+
+  // ===================
+  // Write Back
+  val wb_data = io.dmem.rdata
+  when(inst === LW) {
+    regfile(wb_addr) := wb_data
+  }
+  
 
 
   // ==================

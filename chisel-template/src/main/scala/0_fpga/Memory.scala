@@ -10,9 +10,15 @@ class ImemPortIo extends Bundle {
   val inst = Output(UInt(WORD_LEN.W))
 }
 
+class DmemPortIo extends Bundle {
+  val addr = Input(UInt(WORD_LEN.W))
+  val rdata = Output(UInt(WORD_LEN.W))
+}
+
 class Memory extends Module {
   val io = IO(new Bundle {
     val imem = new ImemPortIo()
+    val dmem = new DmemPortIo()
   })
 
   // 8 x 16384 = 16KB register (as Memory)
@@ -25,5 +31,12 @@ class Memory extends Module {
     mem(io.imem.addr + 2.U(WORD_LEN.W)),
     mem(io.imem.addr + 1.U(WORD_LEN.W)),
     mem(io.imem.addr)
+  )
+
+  io.dmem.rdata := Cat(
+    mem(io.dmem.addr + 3.U(WORD_LEN.W)),
+    mem(io.dmem.addr + 2.U(WORD_LEN.W)),
+    mem(io.dmem.addr + 1.U(WORD_LEN.W)),
+    mem(io.dmem.addr)
   )
 }
