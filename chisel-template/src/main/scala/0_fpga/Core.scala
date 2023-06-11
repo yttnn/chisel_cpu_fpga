@@ -30,16 +30,21 @@ class Core extends Module {
   val rs2_data = Mux((rs2_addr =/= 0.U(WORD_LEN.U)), regfile(rs2_addr), 0.U(WORD_LEN.W))
   val imm_i = inst(31, 20)
   val imm_i_sext = Cat(Fill(20, imm_i(11)), imm_i)
+  val imm_s = Cat(inst(31, 25), inst(11, 7))
+  val imm_s_sext = Cat(Fill(20, imm_s(11)), imm_s)
 
   // ===================
   // Execute
   val alu_out = MuxCase(0.U(WORD_LEN.W), Seq(
-    (inst == LW) -> (rs1_data + imm_i_sext)
+    (inst == LW) -> (rs1_data + imm_i_sext),
+    (inst == SW) -> (rs1_data + imm_s_sext)
   ))
 
   // ===================
   // Memory Access
   io.dmem.addr := alu_out
+  io.dmem.wen := (inst === SW)
+  io.dmem.wdata := rs2_data
 
   // ===================
   // Write Back
