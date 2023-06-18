@@ -1,4 +1,4 @@
-package fpga0
+package {package}
 
 import chisel3._
 import chisel3.util._
@@ -26,7 +26,7 @@ class Memory extends Module {
   // 8 x 16384 = 16KB register (as Memory)
   val mem = Mem(16384, UInt(8.W))
 
-  loadMemoryFromFile(mem, "src/riscv/rv32ui-p-auipc.hex")
+  loadMemoryFromFile(mem, "src/riscv/rv32{isa}-p-{inst}.hex")
 
   io.imem.inst := Cat(
     mem(io.imem.addr + 3.U(WORD_LEN.W)), 

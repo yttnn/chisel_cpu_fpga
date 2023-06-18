@@ -10,9 +10,12 @@ class Core extends Module {
     val imem = Flipped(new ImemPortIo())
     val dmem = Flipped(new DmemPortIo())
     val exit = Output(Bool())
+    val gp = Output(UInt(WORD_LEN.W))
   })
 
   val regfile = Mem(32, UInt(WORD_LEN.W))
+  val csr_regfile = Mem(4096, UInt(WORD_LEN.W))
+
 
   // ===================
   // Instruction Fetch
@@ -146,8 +149,7 @@ class Core extends Module {
   io.dmem.wdata := rs2_data
 
   // CSR
-  val csr_regfile = Mem(4096, UInt(WORD_LEN.W), 0.U(MEN_LEN.W))
-  val csr_addr = inst(31, 20)
+  val csr_addr = Mux(csr_cmd === CSR_E, 0x342.U(CSR_ADDR_LEN.W), inst(31, 20)) // ECALL発生時, p138
   val csr_rdata = csr_regfile(csr_addr)
 
   val csr_wdata = MuxCase(0.U(WORD_LEN.W), Seq(
@@ -176,9 +178,12 @@ class Core extends Module {
 
   // ==================
   // Debug
-  io.exit := (inst === 0x34333231.U(WORD_LEN.W))
+  //io.exit := (inst === 0x34333231.U(WORD_LEN.W))
+  io.gp := regfile(3)
+  io.exit := (pc_reg === 0x44.U(WORD_LEN.W))
   printf(p"pc_reg   : 0x${Hexadecimal(pc_reg)}\n")
   printf(p"inst     : 0x${Hexadecimal(inst)}\n")
+  printf(p"gp       : ${regfile(3)}\n")
   printf(p"rs1_addr : $rs1_addr\n")
   printf(p"rs2_addr : $rs2_addr\n")
   printf(p"wb_addr  : $wb_addr\n")
