@@ -2,13 +2,20 @@
   "name": "chisel_cpu_fpga",
   //"runArgs": ["-it -v ./:/src chisel_cpu_fpga"],
   "build": {
-    "dockerfile": "Dockerfile"
-},
-"customizations": {
-	"vscode": {
-		"extensions": [
-			"scalameta.metals"
-		]
+    "dockerfile": "Dockerfile",
+		"args": {
+			"UID": "1000",
+			"GID": "1000"
+		}
+	},
+
+	"remoteUser": "root", // yabasugi
+
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"scalameta.metals"
+			]
+		}
 	}
-}
 }
